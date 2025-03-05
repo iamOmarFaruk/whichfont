@@ -19,24 +19,55 @@
     display: none;
     pointer-events: none;
     white-space: nowrap;
+    font-weight: 600;
   `;
   document.body.appendChild(tooltip);
 
   let exitButton = document.createElement("button");
   exitButton.id = "exit-button";
-  exitButton.textContent = "Exit Font Finder";
   exitButton.style.cssText = `
     position: fixed;
-    top: 10px;
-    left: 10px;
-    background: red;
+    top: 20px;
+    left: 20px;
+    background: #000;
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
+    padding: 8px 16px 8px 12px;
+    border-radius: 24px;
     cursor: pointer;
     z-index: 2147483647;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   `;
+
+  exitButton.innerHTML = `
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+    <span style="transition: color 0.3s ease">Exit Which Font</span>
+  `;
+
+  // Hover effects
+  exitButton.addEventListener('mouseover', () => {
+    exitButton.style.background = '#111';
+    exitButton.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
+    exitButton.style.transform = 'scale(1.05)';
+    exitButton.querySelector('svg').style.transform = 'rotate(90deg)';
+    exitButton.querySelector('span').style.color = '#fff';
+  });
+  
+  exitButton.addEventListener('mouseout', () => {
+    exitButton.style.background = '#000';
+    exitButton.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+    exitButton.style.transform = 'scale(1)';
+    exitButton.querySelector('svg').style.transform = 'rotate(0deg)';
+    exitButton.querySelector('span').style.color = 'white';
+  });
+  
   document.body.appendChild(exitButton);
   
     // 🔹 সঠিকভাবে ব্যবহৃত ফন্ট চেক করার ফাংশন

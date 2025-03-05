@@ -22,7 +22,6 @@
     white-space: nowrap;
     font-weight: 600;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
   `;
   document.body.appendChild(tooltip);
 
@@ -47,7 +46,6 @@
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
     transition: 
       top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
       transform 0.3s ease,
@@ -78,6 +76,7 @@
     exitButton.style.transform = 'translateX(-50%) scale(1.05)';
     exitButton.querySelector('svg').style.transform = 'rotate(90deg)';
     exitButton.querySelector('span').style.color = '#fff';
+
     // টুলটিপ লুকিয়ে রাখি
     tooltip.style.display = 'none';
   });
@@ -89,7 +88,6 @@
     exitButton.style.transform = 'translateX(-50%) scale(1)';
     exitButton.querySelector('svg').style.transform = 'rotate(0deg)';
     exitButton.querySelector('span').style.color = 'white';
-    // বের হয়ে গেলে আবার টুলটিপ দেখা যাবে (পরবর্তী মাউস মুভে)
   });
 
   // অতিরিক্ত CSS, চাইলে রাখুন
@@ -117,17 +115,41 @@
       return;
     }
 
-    // অন্যথায়, টুলটিপ দেখাই
     const element = event.target;
     const computedStyle = window.getComputedStyle(element);
     const fontFamily = computedStyle.fontFamily;
     const detectedFont = getFirstFont(fontFamily);
 
+    // যদি সঠিক ফন্ট পাওয়া যায়
     if (detectedFont) {
       tooltip.textContent = `Font Name : ${detectedFont}`;
       tooltip.style.display = "block";
-      tooltip.style.top = `${event.clientY + 10}px`;
-      tooltip.style.left = `${event.clientX + 10}px`;
+
+      // tooltip.render হয়ে গেলে এর width/height জানা যাবে
+      const tooltipWidth = tooltip.offsetWidth;
+      const tooltipHeight = tooltip.offsetHeight;
+
+      const margin = 10;
+
+      // সাধারণ অবস্থান (কার্সরের ডান/নিচে দেখাব)
+      let x = event.clientX + margin;
+      let y = event.clientY + margin;
+
+      // ডানে কেটে গেলে বামদিকে দেখাবে
+      if (x + tooltipWidth > window.innerWidth) {
+        x = event.clientX - margin - tooltipWidth;
+      }
+      // নিচে কেটে গেলে উপরে দেখাবে
+      if (y + tooltipHeight > window.innerHeight) {
+        y = event.clientY - margin - tooltipHeight;
+      }
+
+      // যদি ভুল করে ০’র কমে চলে যায় (যেমন খুব প্রান্তিক অবস্থায়)
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+
+      tooltip.style.left = `${x}px`;
+      tooltip.style.top = `${y}px`;
     }
   }
 
@@ -145,6 +167,7 @@
   function exitFontFinder() {
     // Slide-up অ্যানিমেশন
     exitButton.style.top = '-60px';
+
     // ট্রানজিশন শেষ হলে সমস্ত ইভেন্ট ও ডম এলিমেন্ট সরিয়ে ফেলি
     exitButton.addEventListener('transitionend', () => {
       tooltip.remove();

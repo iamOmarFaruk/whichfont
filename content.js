@@ -21,6 +21,8 @@
     pointer-events: none;
     white-space: nowrap;
     font-weight: 600;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
   `;
   document.body.appendChild(tooltip);
 
@@ -44,6 +46,8 @@
     align-items: center;
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
     transition: 
       top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
       transform 0.3s ease,

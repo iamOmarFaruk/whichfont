@@ -27,8 +27,9 @@
   exitButton.id = "exit-button";
   exitButton.style.cssText = `
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
     background: #000;
     color: white;
     border: none;
@@ -41,8 +42,17 @@
     align-items: center;
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 
+      top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+      transform 0.3s ease,
+      background 0.3s ease,
+      box-shadow 0.3s ease;
   `;
+
+  // Animate slide down when mounted
+  setTimeout(() => {
+    exitButton.style.top = '20px';
+  }, 100);
 
   exitButton.innerHTML = `
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease">
@@ -55,7 +65,7 @@
   exitButton.addEventListener('mouseover', () => {
     exitButton.style.background = '#111';
     exitButton.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
-    exitButton.style.transform = 'scale(1.05)';
+    exitButton.style.transform = 'translateX(-50%) scale(1.05)'; // Maintain horizontal centering
     exitButton.querySelector('svg').style.transform = 'rotate(90deg)';
     exitButton.querySelector('span').style.color = '#fff';
   });
@@ -63,7 +73,7 @@
   exitButton.addEventListener('mouseout', () => {
     exitButton.style.background = '#000';
     exitButton.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-    exitButton.style.transform = 'scale(1)';
+    exitButton.style.transform = 'translateX(-50%) scale(1)'; // Maintain horizontal centering
     exitButton.querySelector('svg').style.transform = 'rotate(0deg)';
     exitButton.querySelector('span').style.color = 'white';
   });
@@ -136,11 +146,14 @@
   
     // 🔹 Exit করলে সবকিছু বন্ধ করা
     exitButton.addEventListener("click", () => {
-        tooltip.remove();
-        exitButton.remove();
-        document.removeEventListener("mousemove", mouseMoveHandler);
-        document.removeEventListener("mouseout", mouseOutHandler);
-        window.__FONT_FINDER_ALREADY_LOADED = false;
+        exitButton.style.top = '-60px';
+        exitButton.addEventListener('transitionend', () => {
+            tooltip.remove();
+            exitButton.remove();
+            document.removeEventListener("mousemove", mouseMoveHandler);
+            document.removeEventListener("mouseout", mouseOutHandler);
+            window.__FONT_FINDER_ALREADY_LOADED = false;
+        }, { once: true });
     });
   })();
 

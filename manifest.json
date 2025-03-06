@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Which Fonts?",
+  "name": "Which Font?",
   "description": "Easily identify fonts used on any webpage with just a hover. Simple, fast, and accurate.",
   "version": "1.0.0",
   "permissions": ["scripting", "activeTab", "storage"],

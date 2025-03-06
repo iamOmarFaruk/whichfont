@@ -1,14 +1,23 @@
 {
-    "manifest_version": 3,
-    "name": "Font Detector",
-    "description": "Detect fonts on a webpage",
-    "version": "1.0.0",
-    "permissions": ["scripting", "activeTab"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "action": {
-      "default_title": "Click to Detect Fonts"
+  "manifest_version": 3,
+  "name": "Which Fonts?",
+  "description": "Easily identify fonts used on any webpage with just a hover. Simple, fast, and accurate.",
+  "version": "1.0.0",
+  "permissions": ["scripting", "activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Which Fonts?",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
     }
   }
-  
+}

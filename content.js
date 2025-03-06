@@ -189,4 +189,14 @@
   document.addEventListener("keydown", exitKeyListener);
   exitButton.addEventListener("click", exitFontFinder);
 
+
+
+
+  //exit from background js - for toolbar icon
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.command === "exitFontFinder") {
+    exitFontFinder();
+  }
+});
+
 })();

@@ -8,16 +8,16 @@ chrome.storage.local.get(["whichFontisOn"], (result) => {
 });
 
 
-// Message Listener, যেকোনো content script → background মেসেজ ধরবে
+// Message Listener - will catch any messages from content script to background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'EXIT_FONT_FINDER') {
-    // এখানে আমরা whichFontisOn = false সেট করব ও সেভ করব
+  if (message.type === 'EXIT_WHICH_FONT') {
+    // Here we will set whichFontisOn = false and save it
     whichFontisOn = false;
     chrome.storage.local.set({ whichFontisOn: false }, () => {
-      // সেভ সম্পন্ন হলে success:true রিসপন্স দিব
+      // After saving is complete, send success:true response
       sendResponse({ success: true });
     });
-    // অ্যাসিনক্রোনাস রেসপন্স হবে বলে return true
+    // Return true because this is an asynchronous response
     return true;
   }
 });
@@ -38,7 +38,7 @@ chrome.action.onClicked.addListener(async (tab) => {
     chrome.storage.local.set({ whichFontisOn });
   } else {
     // OFF - Tell content.js to "exit"
-    await chrome.tabs.sendMessage(tab.id, { command: "exitFontFinder" });
+    await chrome.tabs.sendMessage(tab.id, { command: "whichfontexit" });
     whichFontisOn = false;
     chrome.storage.local.set({ whichFontisOn });
   }

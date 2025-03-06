@@ -1,15 +1,17 @@
 (() => {
-  // যদি আগেই লোড হয়ে থাকে, আবার লোড করব না
-  if (window.__FONT_FINDER_ALREADY_LOADED) {
-    console.log("Font Finder script is already loaded.");
+  // Prevent multiple script injections
+  if (window.__WHICH_FONT_ALREADY_LOADED) {
+    // If already loaded, do nothing
     return;
   }
-  window.__FONT_FINDER_ALREADY_LOADED = true;
 
-  // টুলটিপ বানাই
-  let tooltip = document.createElement("div");
-  tooltip.id = "font-tooltip";
-  tooltip.style.cssText = `
+  // Set flag - by default it's false, true means it's on and injected
+  window.__WHICH_FONT_ALREADY_LOADED = true;
+
+  // Create tooltip element
+  let which_font_tooltip = document.createElement("div");
+  which_font_tooltip.id = "which_font_tooltip";
+  which_font_tooltip.style.cssText = `
     position: fixed;
     background-image: linear-gradient(180deg, #009AFF 0, rgb(18, 132, 208) 100%);
     color: white;
@@ -23,14 +25,15 @@
     font-weight: 600;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   `;
-  document.body.appendChild(tooltip);
+  // inject the tooltip element into the DOM
+  document.body.appendChild(which_font_tooltip);
 
-  // এক্সিট বাটন বানাই
-  let exitButton = document.createElement("button");
-  exitButton.id = "exit-button";
-  exitButton.style.cssText = `
+  // Create exit button
+  let which_font_exitButton = document.createElement("button");
+  which_font_exitButton.id = "which_font_exitButton";
+  which_font_exitButton.style.cssText = `
     position: fixed;
-    top: -60px; /* শুরুতে উপরে লুকানো */
+    top: -60px; /* Initially hidden above */
     left: 50%;
     transform: translateX(-50%);
     background-image: linear-gradient(180deg, #009AFF 0, rgb(18, 132, 208) 100%);
@@ -52,153 +55,125 @@
       box-shadow 0.3s ease;
   `;
 
-  // কিছু পরে নিচে নিয়ে এসে (slide down) দেখাব
+  // Show exit button after a short delay
   setTimeout(() => {
-    exitButton.style.top = '20px';
+    which_font_exitButton.style.top = '20px';
   }, 100);
 
-  // এক্সিট বাটনের কন্টেন্ট
-  exitButton.innerHTML = `
+  // Exit button content with SVG icon and text
+  which_font_exitButton.innerHTML = `
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s ease">
       <path d="M18 6L6 18M6 6l12 12"/>
     </svg>
     <span style="transition: color 0.3s ease">(esc) Exit Which Font</span>
   `;
-  document.body.appendChild(exitButton);
 
-  // এই ফ্ল্যাগটি বলে দেবে আমরা এক্সিট বাটনে হোভার করে আছি কিনা
-  let isHoveringExit = false;
+  // Inject the exit button into the DOM
+  document.body.appendChild(which_font_exitButton);
 
-  // এক্সিট বাটনে মাউস ঢুকলে
-  exitButton.addEventListener('mouseover', () => {
-    isHoveringExit = true;
-    exitButton.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
-    exitButton.style.transform = 'translateX(-50%) scale(1.05)';
-    exitButton.querySelector('svg').style.transform = 'rotate(90deg)';
-    exitButton.querySelector('span').style.color = '#fff';
+  // Add hover effect to the exit button - flag
+  let which_font_isHoveringExit = false;
 
-    // টুলটিপ লুকিয়ে রাখি
-    tooltip.style.display = 'none';
+  // Add event listeners for hover effect
+  which_font_exitButton.addEventListener('mouseover', () => {
+    which_font_isHoveringExit = true;
+    which_font_exitButton.style.boxShadow = '0 6px 16px rgba(0,0,0,0.3)';
+    which_font_exitButton.style.transform = 'translateX(-50%) scale(1.05)';
+    which_font_exitButton.querySelector('svg').style.transform = 'rotate(90deg)';
+    which_font_exitButton.querySelector('span').style.color = '#fff';
+    which_font_tooltip.style.display = 'none';
   });
 
-  // এক্সিট বাটনে মাউস বের হয়ে গেলে
-  exitButton.addEventListener('mouseout', () => {
-    isHoveringExit = false;
-    exitButton.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-    exitButton.style.transform = 'translateX(-50%) scale(1)';
-    exitButton.querySelector('svg').style.transform = 'rotate(0deg)';
-    exitButton.querySelector('span').style.color = 'white';
+  // Add event listener for mouseout - means when the mouse leaves the button
+  which_font_exitButton.addEventListener('mouseout', () => {
+    which_font_isHoveringExit = false;
+    which_font_exitButton.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+    which_font_exitButton.style.transform = 'translateX(-50%) scale(1)';
+    which_font_exitButton.querySelector('svg').style.transform = 'rotate(0deg)';
+    which_font_exitButton.querySelector('span').style.color = 'white';
   });
 
-  // অতিরিক্ত CSS, চাইলে রাখুন
-  const style = document.createElement("style");
-  style.textContent = `
-    #exit-button:hover ~ #font-tooltip {
-      display: none !important;
-    }
-  `;
-  document.head.appendChild(style);
 
-  // ফন্ট স্ট্যাক থেকে প্রথম ফন্টটি খুঁজে বের করার ফাংশন
-  function getFirstFont(fontFamily) {
+  // Function to get the first font from the fontFamily string.
+  // Helper function.
+  function which_font_getFirstFont(fontFamily) {
     const fonts = fontFamily.split(",");
-    let firstFont = fonts[0].trim();
-    firstFont = firstFont.replace(/["']/g, "");
+    let firstFont = fonts[0].trim().replace(/["']/g, "");
     return firstFont;
   }
 
-  // মাউস নড়লেই টুলটিপ আপডেট ও দেখানো
-  function mouseMoveHandler(event) {
-    // যদি এক্সিট বাটনে hover করে থাকি, সরাসরি টুলটিপ লুকিয়ে রাখি
-    if (isHoveringExit) {
-      tooltip.style.display = 'none';
+  // Event handler for mousemove event - will show the tooltip.
+  function which_font_mouseMoveHandler(event) {
+    if (which_font_isHoveringExit) {
+      which_font_tooltip.style.display = 'none';
       return;
     }
 
     const element = event.target;
     const computedStyle = window.getComputedStyle(element);
     const fontFamily = computedStyle.fontFamily;
-    const detectedFont = getFirstFont(fontFamily);
+    const detectedFont = which_font_getFirstFont(fontFamily);
 
-    // যদি সঠিক ফন্ট পাওয়া যায়
     if (detectedFont) {
-      tooltip.textContent = `Font Name : ${detectedFont}`;
-      tooltip.style.display = "block";
+      which_font_tooltip.textContent = `Font Name: ${detectedFont}`;
+      which_font_tooltip.style.display = "block";
+      
+      let x = event.clientX + 10;
+      let y = event.clientY + 10;
 
-      // tooltip.render হয়ে গেলে এর width/height জানা যাবে
-      const tooltipWidth = tooltip.offsetWidth;
-      const tooltipHeight = tooltip.offsetHeight;
-
-      const margin = 10;
-
-      // সাধারণ অবস্থান (কার্সরের ডান/নিচে দেখাব)
-      let x = event.clientX + margin;
-      let y = event.clientY + margin;
-
-      // ডানে কেটে গেলে বামদিকে দেখাবে
-      if (x + tooltipWidth > window.innerWidth) {
-        x = event.clientX - margin - tooltipWidth;
+      if (x + which_font_tooltip.offsetWidth > window.innerWidth) {
+        x = event.clientX - 10 - which_font_tooltip.offsetWidth;
       }
-      // নিচে কেটে গেলে উপরে দেখাবে
-      if (y + tooltipHeight > window.innerHeight) {
-        y = event.clientY - margin - tooltipHeight;
+      if (y + which_font_tooltip.offsetHeight > window.innerHeight) {
+        y = event.clientY - 10 - which_font_tooltip.offsetHeight;
       }
 
-      // যদি ভুল করে ০’র কমে চলে যায় (যেমন খুব প্রান্তিক অবস্থায়)
-      if (x < 0) x = 0;
-      if (y < 0) y = 0;
-
-      tooltip.style.left = `${x}px`;
-      tooltip.style.top = `${y}px`;
+      which_font_tooltip.style.left = `${x}px`;
+      which_font_tooltip.style.top = `${y}px`;
     }
   }
 
-  // মাউস উপাদান থেকে বের হলে টুলটিপ হাইড করা
-  function mouseOutHandler() {
-    if (!isHoveringExit) {
-      tooltip.style.display = "none";
+  // Event handler for mouseout event - will hide the tooltip if hovering over the exit button.
+  function which_font_mouseOutHandler() {
+    if (!which_font_isHoveringExit) {
+      which_font_tooltip.style.display = "none";
     }
   }
 
-  document.addEventListener("mousemove", mouseMoveHandler);
-  document.addEventListener("mouseout", mouseOutHandler);
-
-  // স্ক্রিপ্ট বন্ধ করার ফাংশন
-  function exitFontFinder() {
-    // Slide-up অ্যানিমেশন
-    exitButton.style.top = '-60px';
-
-    // ট্রানজিশন শেষ হলে সমস্ত ইভেন্ট ও ডম এলিমেন্ট সরিয়ে ফেলি
-    exitButton.addEventListener('transitionend', () => {
-      tooltip.remove();
-      exitButton.remove();
-      document.removeEventListener("mousemove", mouseMoveHandler);
-      document.removeEventListener("mouseout", mouseOutHandler);
-      document.removeEventListener("keydown", exitKeyListener);
-      window.__FONT_FINDER_ALREADY_LOADED = false;
-      // Background স্ক্রিপ্টকে জানাই যে 'EXIT_FONT_FINDER' ইভেন্ট ঘটেছে
-      chrome.runtime.sendMessage({ type: 'EXIT_FONT_FINDER' });
+  // Function to exit the extension. call this function to exit the extension.
+  function which_font_exit() {
+    which_font_exitButton.style.top = '-60px';
+    which_font_exitButton.addEventListener('transitionend', () => {
+      which_font_tooltip.remove();
+      which_font_exitButton.remove();
+      document.removeEventListener("mousemove", which_font_mouseMoveHandler);
+      document.removeEventListener("mouseout", which_font_mouseOutHandler);
+      document.removeEventListener("keydown", which_font_exitKeyListener);
+      window.__WHICH_FONT_ALREADY_LOADED = false; // means , make it ready next injection
+      chrome.runtime.sendMessage({ type: 'EXIT_WHICH_FONT' }); // send message to background.js to update local storage flag value
     }, { once: true });
   }
 
-  // Esc প্রেস করলে, অথবা ক্লিক করলে বন্ধ
-  function exitKeyListener(event) {
+  // esc key listener helper function.
+  function which_font_exitKeyListener(event) {
     if (event.key === "Escape") {
-      exitFontFinder();
+      which_font_exit();
     }
   }
 
-  document.addEventListener("keydown", exitKeyListener);
-  exitButton.addEventListener("click", exitFontFinder);
+  // Add event listeners to the document for mousemove and mouseout events.
+  document.addEventListener("mousemove", which_font_mouseMoveHandler);
+  document.addEventListener("mouseout", which_font_mouseOutHandler);
+
+  // Add event listener for keydown event - will exit the extension if esc key is pressed.
+  document.addEventListener("keydown", which_font_exitKeyListener);
+  which_font_exitButton.addEventListener("click", which_font_exit);
 
 
-
-
-  //exit from background js - for toolbar icon
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.command === "exitFontFinder") {
-    exitFontFinder();
-  }
-});
-
+  // send message to background.js to exit the extension by clicking the icon
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.command === "whichfontexit") {
+      which_font_exit();
+    }
+  });
 })();

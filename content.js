@@ -176,6 +176,8 @@
       document.removeEventListener("mouseout", mouseOutHandler);
       document.removeEventListener("keydown", exitKeyListener);
       window.__FONT_FINDER_ALREADY_LOADED = false;
+      // Background স্ক্রিপ্টকে জানাই যে 'EXIT_FONT_FINDER' ইভেন্ট ঘটেছে
+      chrome.runtime.sendMessage({ type: 'EXIT_FONT_FINDER' });
     }, { once: true });
   }
 

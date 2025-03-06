@@ -3,7 +3,7 @@
   "name": "Which Fonts?",
   "description": "Easily identify fonts used on any webpage with just a hover. Simple, fast, and accurate.",
   "version": "1.0.0",
-  "permissions": ["scripting", "activeTab"],
+  "permissions": ["scripting", "activeTab", "storage"],
   "background": {
     "service_worker": "background.js"
   },

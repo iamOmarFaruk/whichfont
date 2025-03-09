@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Which Font?",
   "description": "Easily identify fonts used on any webpage with just a hover. Simple, fast, and accurate.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "permissions": ["scripting", "activeTab", "storage"],
   "background": {
     "service_worker": "background.js"

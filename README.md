@@ -15,7 +15,7 @@ A lightweight and user-friendly Chrome extension that helps you identify fonts u
 
 ## Installation
 
-1. Download the extension from Chrome Web Store (coming soon)
+1. Download the extension from Chrome Web Store - https://chromewebstore.google.com/detail/which-font/ahbhidgfakmjlfbbknalkhjalgiidlah
 2. Click the extension icon in your browser toolbar to activate
 3. Hover over any text to see the font name
 4. Press ESC or click the exit button to deactivate

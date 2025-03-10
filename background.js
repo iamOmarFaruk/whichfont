@@ -7,15 +7,27 @@ chrome.storage.local.get(["whichFontisOn"], (result) => {
   }
 });
 
+// Content script ইনজেক্ট করার ফাংশন
+async function injectContentScript(tabId, tab) {
+  try {
+    // শুধুমাত্র http বা https পেজে ইনজেক্ট করো
+    if (!tab.url || !tab.url.startsWith('http')) return;
+    
+    await chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["content.js"],
+    });
+  } catch (error) {
+    console.warn("Script Injection Failed:", error);
+  }
+}
+
 // পেজ রিলোড হলে আবার content.js ইনজেক্ট করো (যদি আগে অন থাকে)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
     chrome.storage.local.get(["whichFontisOn"], (result) => {
       if (result.whichFontisOn) {
-        chrome.scripting.executeScript({
-          target: { tabId: tabId },
-          files: ["content.js"],
-        }).catch((error) => console.warn("Script Injection Failed:", error));
+        injectContentScript(tabId, tab);
       }
     });
   }
@@ -36,11 +48,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.action.onClicked.addListener(async (tab) => {
   if (!whichFontisOn) {
     // ON - Inject content.js
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["content.js"],
-    }).catch((error) => console.warn("Script Injection Failed:", error));
-
+    await injectContentScript(tab.id, tab);
     whichFontisOn = true;
     chrome.storage.local.set({ whichFontisOn });
   } else {
